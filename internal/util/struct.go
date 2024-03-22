@@ -15,6 +15,7 @@ func PPSize(obj any) {
 	tw.AppendHeader([]any{"Field Name", "Offset", "Size", "Byte Map"})
 	tw.Style().Title.Align = text.AlignCenter
 	tw.SetColumnConfigs([]table.ColumnConfig{
+
 		//{
 		//	Name:     "Field Name",
 		//	Colors:   text.Colors{text.FgBlue},

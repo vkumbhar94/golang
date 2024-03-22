@@ -20,15 +20,17 @@ type AllVars2 struct {
 	Int       int32
 	Name      string
 	Float64   float64
+	B         bool
 }
 
 type AllVars3 struct {
+	v2        AllVars2
+	Bool      bool
 	Addresses []string
 	Name      string
 	Float64   float64
-	Int32     int32
 	Int       int
-	Bool      bool
+	Int32     int32
 }
 
 func main() {
@@ -42,5 +44,11 @@ func main() {
 	util.PPSize(obj2)
 	util.PPSize(obj3)
 
+	var arr []string
+	sort(arr)
 	fmt.Println("✅ Done")
+}
+
+func sort(arr []string) {
+
 }
