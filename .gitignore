@@ -1,3 +1,4 @@
 .idea/
-./cmd/parquet/file.parquet
-./cmd/fileops/file.txt
+/cmd/parquet/file.parquet
+/cmd/fileops/file.txt
+/presentations
