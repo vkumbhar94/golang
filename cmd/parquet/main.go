@@ -10,14 +10,15 @@ type RowType struct{ FirstName, LastName string }
 
 func main() {
 	fmt.Println("starting the application...")
-	if err := parquet.WriteFile("file.parquet", []RowType{
+	const path = "./cmd/parquet/file.parquet"
+	if err := parquet.WriteFile(path, []RowType{
 		{FirstName: "Bob"},
 		{FirstName: "Alice"},
 	}); err != nil {
 		fmt.Println("failed to write parquet file", err)
 	}
 
-	rows, err := parquet.ReadFile[RowType]("file.parquet")
+	rows, err := parquet.ReadFile[RowType](path)
 	if err != nil {
 		fmt.Println("failed to write parquet file", err)
 	}
