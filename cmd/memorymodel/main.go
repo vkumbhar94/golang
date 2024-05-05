@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"golang/internal/util"
+	"github.com/vkumbhar94/golang/internal/util"
 )
 
 type AllVars1 struct {

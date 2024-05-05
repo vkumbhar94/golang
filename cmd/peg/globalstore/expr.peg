@@ -1,0 +1,190 @@
+{
+    package main
+
+    type myerr struct{
+        inner error
+        len int
+    }
+    func (e myerr) Error() string {
+        return e.inner.Error()
+    }
+
+    type regerr struct{
+        inner error
+        expr string
+    }
+    func (e regerr) Error() string {
+        return e.inner.Error()
+    }
+    type obj struct{
+        n1, n2 string
+    }
+}
+
+EmptyQuery <- _ EOF {
+    c.globalStore["abc"] = "suggest field"
+    return "empty query", nil
+}
+
+AssignQuery <- _ s:Ident _ "=" _ EOF {
+    c.globalStore[s.(string)] = "suggest values"
+    return "assign query", nil
+}
+
+Input <- _ s:Ident {
+    nm := s.(string)
+    if m, ok := c.globalStore["namespaces"]; ok{
+        if _, ok2 := m.(map[string]string)[nm]; ok2{
+            fmt.Println("ns exist")
+        } else{
+            fmt.Println("ns doesn't exist")
+            return nil, fmt.Errorf("%s namespace doesn't exist", nm)
+        }
+    } else{
+        fmt.Println("ns store not present")
+    }
+    return nm, nil
+}
+
+/// lparen _ s:Identifiers _ !rparen EOF {
+//    return nil, myerr{errors.New("parenthesis not closed"), len(string(c.text))}
+//}
+/// lparen _ s:Identifiers _ !rparen EOF {
+//    return nil, myerr{errors.New("parenthesis not opened"), len(string(c.text))}
+//}
+
+Identifiers <- first:(Ident) _ rest:(RestIdentfiers)? {
+    if rest == nil {
+        return []any{first}, nil
+    }
+    return append([]any{first}, rest.([]any)...), nil
+}
+
+RestIdentfiers <- ',' _ s:(Ident)+ {
+    return s, nil
+} / "," {
+      return "", myerr{fmt.Errorf("malformed expression"), len(string(c.text))}
+}
+
+
+
+//
+// Generic util rules
+//
+
+_ "optional-whitespace" <- [ \n\t\r]*
+__ "atleast-one-whitespace" <- [ \n\t\r]+
+
+slash <- '/'
+
+EOF <- !.
+
+
+//
+
+RegularExpressionBody <- RegularExpressionFirstChar RegularExpressionChar*
+
+RegularExpressionFirstChar <- ![*\\/[] RegularExpressionNonTerminator
+  / RegularExpressionBackslashSequence
+  / RegularExpressionClass
+
+RegularExpressionChar <- ![\\/[] RegularExpressionNonTerminator
+  / RegularExpressionBackslashSequence
+  / RegularExpressionClass
+
+RegularExpressionBackslashSequence <- "\\" RegularExpressionNonTerminator
+
+RegularExpressionNonTerminator <- !LineTerminator SourceCharacter
+
+RegularExpressionClass <- "[" RegularExpressionClassChar* "]"
+
+RegularExpressionClassChar <- ![\]\\] RegularExpressionNonTerminator
+  / RegularExpressionBackslashSequence
+
+LineTerminator <- [\n\r\u2028\u2029]
+
+SourceCharacter <- .
+
+//
+// https://donsnotes.com/tech/charsets/ascii.html
+//
+// x00 is null character, x1f is unit separator
+EscapedChar <- [\x00-\x1f"\\]
+
+EscapeSequence <- SingleCharEscape / UnicodeEscape
+
+// https://docs.mojolicious.org/Mojo/JSON.txt
+// "\\/bfnrt is escape characters
+SingleCharEscape <- ["\\/bfnrt]
+
+UnicodeEscape <- 'u' HexDigit HexDigit HexDigit HexDigit
+
+DecimalDigit <- [0-9]
+
+NonZeroDecimalDigit <- [1-9]
+
+HexDigit <- [0-9a-f]i
+
+Ident <- [_a-zA-Z][._a-zA-Z0-9]* {
+    return string(c.text), nil
+}
+
+//
+
+
+RegEx "parse regex" <- slash RegularExpressionBody slash {
+    c.text = bytes.Replace(c.text, []byte(`\/`), []byte(`/`), -1)
+    return strings.Trim(string(c.text), "/"), nil
+} / slash RegularExpressionBody !slash {
+    return "", myerr{errors.New("regex boundary is not closed, missing \"/\": "+string(c.text)), 1}
+} / slash (&(!slash) .)+ slash {
+    c.text = bytes.Trim(c.text, "/")
+    _, err := regexp.Compile(string(c.text))
+    return "", regerr{expr: string(c.text), inner: err}
+}
+
+//
+
+String "string double-quoted" <- '"' ( !EscapedChar . / '\\' EscapeSequence )* '"' {
+    c.text = bytes.Replace(c.text, []byte(`\/`), []byte(`/`), -1)
+    return strconv.Unquote(string(c.text))
+} / '"' ( !EscapedChar . / '\\' EscapeSequence )* !'"' {
+    return "", myerr{errors.New("double quote is not closed: "+string(c.text)), 1}
+}
+
+Strings <- ',' _ s:String {
+    return s, nil
+}
+
+//
+
+Int64 <- [0-9]+ {
+    return strconv.ParseInt(string(c.text), 10, 64)
+}
+
+LitNum <- ('-' / '+')? [0-9]+ ('.' [0-9]+)? {
+    return strconv.ParseFloat(string(c.text), 64)
+}
+
+//
+
+
+
+lparen <- "("
+rparen <- ")"
+
+mul <- '*'
+div <- '/'
+add <- '+'
+sub <- '-'
+
+match <- "~"
+eq  <- "==" / "="
+neq <- "!="
+lt  <- "<"
+lte <- "<="
+gt  <- ">"
+gte <- ">="
+
+
+//

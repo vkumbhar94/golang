@@ -29,6 +29,9 @@ func main() {
 	fmt.Println("starting zero alloc builder...")
 	var f Foo
 
+	// golang type system is the beauty here.
+	// It just casts the object to another type whereas the referred underneath memory is the same
+	// here pointer to object of Foo is type casted to pointer of FooBuilder
 	(*FooBuilder)(&f).
 		SetA(1).
 		SetB("hello").

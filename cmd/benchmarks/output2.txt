@@ -1,0 +1,16 @@
+goos: darwin
+goarch: amd64
+pkg: github.com/vkumbhar94/golang/cmd/benchmarks
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkAdd2-12    	1000000000	         0.2647 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2672 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2578 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2629 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2660 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2666 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2632 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.3219 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2616 ns/op	       0 B/op	       0 allocs/op
+BenchmarkAdd2-12    	1000000000	         0.2615 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/vkumbhar94/golang/cmd/benchmarks	3.227s
