@@ -24,6 +24,16 @@ func main() {
 	fmt.Println("End")
 }
 
+type NamedThread interface {
+	Thread
+	Id() string
+}
+
 func Run[T Thread](t T) {
+	t.Run()
+}
+
+func RunNamedThread[T NamedThread](t T) {
+	fmt.Println(t.Id())
 	t.Run()
 }
