@@ -7,9 +7,12 @@ import (
 type EnumA int
 
 const (
-	A1 EnumA = iota
+	_ EnumA = iota
+	A1
 	A2
 	A3
+	_
+	A5
 )
 
 type EnumB int
