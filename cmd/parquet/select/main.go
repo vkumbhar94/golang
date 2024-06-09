@@ -25,14 +25,16 @@ func main() {
 func fileMultiType(client *s3.Client) {
 	params := &s3.SelectObjectContentInput{
 		Bucket:         aws.String("localdev"),
-		Key:            aws.String("file-multitype.parquet"),
+		Key:            aws.String("upload-file-multitype.parquet"),
 		ExpressionType: types.ExpressionTypeSql,
 		// Expression:     aws.String("SELECT * FROM S3Object"),
-		// Expression:     aws.String("SELECT * FROM S3Object where Id_Int64 = 123"),
+		Expression: aws.String("SELECT max(Id_Int64) FROM S3Object"),
+		// Expression: aws.String("SELECT FirstName_String FROM S3Object"),
+		// Expression: aws.String("SELECT * FROM S3Object where Id_Int64 = 123"),
 		// Expression: aws.String("SELECT * FROM S3Object where Age_Int64 > 25"),
-		// Expression: aws.String("SELECT * FROM S3Object where FirstName_String like '%o%'"),
+		// Expression: aws.String("SELECT * FROM S3Object where FirstName_String like '%i%'"),
 		// Expression: aws.String("SELECT * FROM S3Object where LastName_String like '%o%'"),
-		Expression: aws.String("SELECT * FROM S3Object where Age_Int64 > 25 and LastName_String like '%o%'"),
+		// Expression: aws.String("SELECT * FROM S3Object where Age_Int64 > 25 and LastName_String like '%o%'"),
 		InputSerialization: &types.InputSerialization{
 			// CSV: &types.CSVInput{
 			// 	FileHeaderInfo: types.FileHeaderInfoUse,

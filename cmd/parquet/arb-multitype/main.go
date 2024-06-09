@@ -1,11 +1,17 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/parquet-go/parquet-go"
 	"github.com/vkumbhar94/golang/internal/util"
 )
@@ -103,7 +109,42 @@ func main() {
 	}
 	fmt.Println(sl)
 
+	writeToS3(schema, path)
+
 	fmt.Println("ending the application...")
+}
+
+func writeToS3(schema *parquet.Schema, path string) {
+	client := util.MinIOS3Client()
+	m := make(map[string]string)
+	marshal, err := json.Marshal(schema.Columns())
+	if err != nil {
+		panic(err)
+	}
+	m["columns"] = string(marshal)
+	open, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket:   aws.String("localdev"),
+		Key:      aws.String("upload-file-multitype.parquet"),
+		Body:     bytes.NewBuffer(open),
+		Metadata: m,
+	}, s3.WithAPIOptions(
+		v4.SwapComputePayloadSHA256ForUnsignedPayloadMiddleware,
+	))
+	if err != nil {
+		panic(err)
+	}
+	object, err := client.HeadObject(context.TODO(), &s3.HeadObjectInput{
+		Bucket: aws.String("localdev"),
+		Key:    aws.String("upload-file-multitype.parquet"),
+	})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("object: ", object.Metadata)
 }
 
 func typeOf[T any]() reflect.Type {
