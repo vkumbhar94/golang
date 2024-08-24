@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -15,4 +16,10 @@ func main() {
 		arr2[i] = "\"" + v + "\""
 	}
 	fmt.Println(strings.Join(arr2, ", "))
+
+	fmt.Println(strconv.Unquote(`"abc"`))
+
+	// using first argument multiple times in string format
+	const rdsCertURLFormat = "https://truststore.pki.rds.amazonaws.com/%[1]s/%[1]s-bundle.pem"
+	fmt.Println(fmt.Sprintf(rdsCertURLFormat, "us-gov-west-1"))
 }

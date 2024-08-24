@@ -6,7 +6,7 @@ import "fmt"
 //go:generate pigeon -o expr.peg.go ./expr.peg
 
 func main() {
-	parse, err := Parse("", []byte("(ab,xyz,)"), Debug(false))
+	parse, err := Parse("", []byte("(ab,xyz)"), Debug(false))
 	if err != nil {
 		panic(err)
 	}

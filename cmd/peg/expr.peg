@@ -19,6 +19,7 @@
 }
 
 Input <- lparen _ s:Identifiers _ rparen EOF {
+    fmt.Println("All text", string(c.text))
     return s, nil
 }
 /// lparen _ s:Identifiers _ !rparen EOF {
@@ -29,6 +30,7 @@ Input <- lparen _ s:Identifiers _ rparen EOF {
 //}
 
 Identifiers <- first:(Ident) _ rest:(RestIdentfiers)? {
+
     if rest == nil {
         return []any{first}, nil
     }
